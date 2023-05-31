@@ -16,6 +16,8 @@ public interface DishDao {
 
     List<DishAttribute> getSellDishList();
 
+    Integer getWindowById(Integer id);
+    
     List<RecommendDishAttribute> getRecommendDishList(Integer stuID, String date);
 
     DishAttribute getDishById(Integer id);
