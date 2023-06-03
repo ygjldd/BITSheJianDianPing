@@ -14,23 +14,27 @@
     </select>
 
     <select id="getDishListByAddress" resultType="com.example.BITSheJianDianPing.bean.DishAttribute">
-        SELECT * FROM DISH WHERE canteen=#{canteen} and floor=#{floor} and windowNum=#{window}
+        SELECT * FROM Dish WHERE canteen=#{canteen} and floor=#{floor} and windowNum=#{window}
     </select>
 
     <select id="getDishByAddressAndName" resultType="com.example.BITSheJianDianPing.bean.DishAttribute">
-        SELECT * FROM DISH WHERE canteen=#{canteen} and floor=#{floor} and windowNum=#{window} and name=#{name}
+        SELECT * FROM Dish WHERE canteen=#{canteen} and floor=#{floor} and windowNum=#{window} and name=#{name}
     </select>
 
     <select id="getDishById" resultType="com.example.BITSheJianDianPing.bean.DishAttribute">
-        SELECT * FROM DISH WHERE id=#{id}
+        SELECT * FROM Dish WHERE id=#{id}
+    </select>
+
+    <select id="getWindowById" resultType="Integer">
+        SELECT windowNum FROM Dish WHERE id=#{id}
     </select>
 
     <select id="getNewDishList" resultType="com.example.BITSheJianDianPing.bean.DishAttribute">
-        SELECT * FROM DISH WHERE news=1
+        SELECT * FROM Dish WHERE news=1
     </select>
 
     <select id="getSellDishList" resultType="com.example.BITSheJianDianPing.bean.DishAttribute">
-        SELECT * FROM DISH WHERE discount!=1.0
+        SELECT * FROM Dish WHERE discount!=1.0
     </select>
 
     <update id="updatePersonalPassword">

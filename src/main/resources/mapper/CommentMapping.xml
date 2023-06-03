@@ -15,12 +15,20 @@
         SELECT * from UserComment WHERE canteen=#{canteen} and floor=#{floor} and windowNum=#{window} and dishname=#{dishname}
     </select>
 
+    <select id="getCommentListByAddressAndId" resultType="com.example.BITSheJianDianPing.bean.CommentAttribute">
+        SELECT * from UserComment WHERE canteen=#{canteen} and floor=#{floor} and windowNum=#{window} and dishid=#{dishid}
+    </select>
+
     <select id="getPopularDishid" resultType="Integer">
         SELECT dishid FROM
             (SELECT dishid ,avg(score) as 'score' FROM
                 (SELECT dishid , taste+environment+serve as 'score' FROM UserComment) as tableone
                 GROUP BY dishid ) as tabletwo
             ORDER BY score desc
+    </select>
+
+    <select id="getContent" resultType="String">
+        SELECT content FROM UserComment WHERE commentid=#{commentid}
     </select>
 
     <insert id="insertComment">

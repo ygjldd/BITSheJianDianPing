@@ -265,6 +265,82 @@ class NewandsellReturn
     }
 }
 
+class NameAndId
+{
+    private String name;
+    private  Integer id;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+}
+
+
+class DishlistReturn
+{
+    String type;
+    Integer code;
+    String message;
+    static class Data
+    {
+        LinkedList<NameAndId> dishlist;
+
+        public LinkedList<NameAndId> getDishlist() {
+            return dishlist;
+        }
+
+        public void setDishlist(LinkedList<NameAndId> dishlist) {
+            this.dishlist = dishlist;
+        }
+    }
+
+    Data data;
+
+    public Data getData() {
+        return data;
+    }
+
+    public void setData(Data data) {
+        this.data = data;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+
 @Controller
 public class DishesRequest {
 
@@ -313,11 +389,24 @@ public class DishesRequest {
         popularReturn.message="正常";
         popularReturn.data=new Data();
         popularReturn.data.dishes=new LinkedList<AddressAndDetails>();
-        List<Integer> q=commentManageDao.getPopularDishid();
 
-        if (last_id==0) {
-            for (int i = 0; i < q.size(); i++) {
-                if (i == number) break;
+
+        List<Integer> q=commentManageDao.getPopularDishid();
+        if (last_id<0)
+        {
+            popularReturn.code=2;
+            popularReturn.message="last_id不能为负";
+            return popularReturn;
+        }
+        if (last_id>=q.size())
+        {
+            popularReturn.code=2;
+            popularReturn.message="last_id大于等于商品数量";
+            return popularReturn;
+        }
+
+        for (int i = last_id; i < q.size()&& i < last_id + number; i++) {
+
                 AddressAndDetails e = new AddressAndDetails();
                 DishAttribute dishAttribute=dishDao.getDishById(q.get(i));
                 System.out.println(q.get(i));
@@ -326,6 +415,7 @@ public class DishesRequest {
                 e.setWindow(dishAttribute.getWindow());
 
                 e.setId(dishAttribute.getId());
+                e.setWindow(dishDao.getWindowById(e.getId()));
                 e.setName(dishAttribute.getName());
                 e.setDiscount(dishAttribute.getDiscount());
                 e.setPrice(dishAttribute.getPrice());
@@ -335,35 +425,15 @@ public class DishesRequest {
                 popularReturn.data.dishes.addLast(e);
 
             }
+        if (last_id+number>q.size())
+        {
+            popularReturn.code=1;
+            popularReturn.message="商品数量不足"+number+"只返回了"+(q.size()-last_id)+"个商品";
+            return popularReturn;
         }
-        Integer cnt=0;
-        if (last_id!=0) {
-            for (int i=0;i<q.size();i++) {
-                if (q.get(i)==last_id)
-                {
-                    for (int j=i+1;j<q.size();j++)
-                    {
-                        cnt++;
-                        AddressAndDetails e = new AddressAndDetails();
-                        DishAttribute dishAttribute=dishDao.getDishById(q.get(i));
-                        e.setCanteen(dishAttribute.getCanteen());
-                        e.setFloor(dishAttribute.getFloor());
-                        e.setWindow(dishAttribute.getWindow());
 
-                        e.setId(dishAttribute.getId());
-                        e.setName(dishAttribute.getName());
-                        e.setDiscount(dishAttribute.getDiscount());
-                        e.setPrice(dishAttribute.getPrice());
-                        e.setFlavor(dishAttribute.getFlavor());
-                        e.setDescription(dishAttribute.getDescription());
-                        e.setPhoto(dishAttribute.getPhoto());
-                        popularReturn.data.dishes.addLast(e);
-                        if (cnt==number) break;
-                    }
-                    break;
-                }
-            }
-        }
+
+
 
         return popularReturn;
     }
@@ -390,6 +460,7 @@ public class DishesRequest {
             e.setFloor(dishAttributeNewList.get(i).getFloor());
             e.setWindow(dishAttributeNewList.get(i).getWindow());
             e.setId(dishAttributeNewList.get(i).getId());
+            e.setWindow(dishDao.getWindowById(e.getId()));
             e.setName(dishAttributeNewList.get(i).getName());
             e.setDiscount(dishAttributeNewList.get(i).getDiscount());
             e.setPrice(dishAttributeNewList.get(i).getPrice());
@@ -408,6 +479,7 @@ public class DishesRequest {
             e.setFloor(dishAttributeSellList.get(i).getFloor());
             e.setWindow(dishAttributeSellList.get(i).getWindow());
             e.setId(dishAttributeSellList.get(i).getId());
+            e.setWindow(dishDao.getWindowById(e.getId()));
             e.setName(dishAttributeSellList.get(i).getName());
             e.setDiscount(dishAttributeSellList.get(i).getDiscount());
             e.setPrice(dishAttributeSellList.get(i).getPrice());
@@ -418,6 +490,32 @@ public class DishesRequest {
         }
 
         return newandsellReturn;
+    }
+
+    @GetMapping("/api/home_page/dishlist")
+    @ResponseBody
+    public DishlistReturn Dishlist(@RequestParam("canteen") Integer canteen, @RequestParam("floor") Integer floor, @RequestParam("window") Integer window)
+    {
+        //System.out.println("id:"+id+" date:"+date+" number:"+number);
+        DishlistReturn dishlistReturn =new DishlistReturn();
+        dishlistReturn.type="/home_page/dishlist";
+        dishlistReturn.code=1;
+        dishlistReturn.message="正常";
+        dishlistReturn.data=new DishlistReturn.Data();
+        dishlistReturn.data.dishlist=new LinkedList<NameAndId>();
+
+        List<DishAttribute> dishAttributeList;
+        dishAttributeList=dishDao.getDishListByAddress(canteen,floor,window);
+
+        for (int i=0;i<dishAttributeList.size();i++)
+        {
+            NameAndId e =new NameAndId();
+            e.setId(dishAttributeList.get(i).getId());
+            e.setName(dishAttributeList.get(i).getName());
+            dishlistReturn.data.dishlist.addLast(e);
+        }
+
+        return dishlistReturn;
     }
 
 }

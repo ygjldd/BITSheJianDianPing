@@ -16,6 +16,8 @@ public interface DishDao {
 
     DishAttribute getDishById(Integer id);
     DishAttribute getDishByAddressAndName(Integer canteen, Integer floor, Integer window,String name);
+
+    Integer getWindowById(Integer id);
     int AddDish(String name, String description, Double discount, Double price, Integer canteen, Integer floor, Integer window, Integer news);
     int AddAddress(Integer canteen, Integer floor, Integer window);
     int DeleteAddress(Integer canteen, Integer floor, Integer window);
