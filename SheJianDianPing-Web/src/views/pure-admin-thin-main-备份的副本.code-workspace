@@ -1,0 +1,19 @@
+{
+  "folders": [
+	{
+		"name": "pure-admin-thin-main-备份的副本",
+		"path": "../.."
+	},
+	{
+		"path": "../../../../../../Users/xiyuchen/Downloads/vue-pure-admin-main"
+	}
+],
+  "settings": {
+    "files.autoSave": "afterDelay",
+    "git.confirmSync": false,
+    "files.associations": {
+      "editor.snippetSuggestions": "top"
+    },
+    "iconify.excludes": ["el"]
+  }
+}
